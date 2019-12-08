@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CategoryList.CategoryListActivity">
+
+
+<!--    <ImageView-->
+<!--        android:padding="8dp"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:src="@drawable/recyclerview_bg"/>-->
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie_bg"
+        app:lottie_rawRes="@raw/bg"
+        app:lottie_loop="true"
+        android:layout_width="match_parent"
+        android:translationY="140dp"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="40dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/rv_categories"/>
+
+    <ImageView
+        android:translationY="-350dp"
+        android:layout_width="wrap_content"
+        android:scaleX="1.8"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/top_header" />
+
+
+    <TextView
+        android:text="CATEGORIES"
+        android:textSize="30sp"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</RelativeLayout>

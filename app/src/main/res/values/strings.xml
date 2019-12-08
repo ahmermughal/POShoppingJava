@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">POShopping</string>
+    <string name="select_mode">Add Product or Scan Product</string>
+
+
+    <string name="CATEGORY_LIST_MODE">CATEGORY_LIST_MODE</string>
+    <string name="CATEGORY_NAME">CATEGORY_NAME</string>
+</resources>
