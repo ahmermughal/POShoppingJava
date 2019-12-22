@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,14 +33,17 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.Result;
 import com.idevelopstudio.poshopping.Database.AppDatabase;
 import com.idevelopstudio.poshopping.Database.Product;
+import com.idevelopstudio.poshopping.Extra.AppExecutors;
 import com.idevelopstudio.poshopping.Extra.SendRecieptEmail;
 import com.idevelopstudio.poshopping.R;
+import com.idevelopstudio.poshopping.tools.SwipeToDeleteCallbackCheckOutAdapter;
+import com.idevelopstudio.poshopping.tools.SwipeToDeleteCallbackProductAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class CheckoutActivity extends AppCompatActivity {
+public class CheckoutActivity extends AppCompatActivity implements CheckoutAdapter.AdapterDeleteListener {
     private static final String TAG = CheckoutActivity.class.getSimpleName();
     private static final int PERMISSION_REQUEST_CAMERA = 200;
 
@@ -54,6 +58,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private View emptyStateLayout;
     private TextView totalPriceTextView;
     private Button sendEmailButton;
+    private int maxCounterValue; // used to limit the + button
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +71,7 @@ public class CheckoutActivity extends AppCompatActivity {
         fab.setOnClickListener(v -> checkCameraPermission());
         recyclerView = findViewById(R.id.rv_checkout);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        checkoutAdapter = new CheckoutAdapter(this);
+        checkoutAdapter = new CheckoutAdapter(this, this);
         recyclerView.setAdapter(checkoutAdapter);
         emptyStateLottie = findViewById(R.id.lottie_empty_state);
         emptyStateLayout = findViewById(R.id.layout_empty_state);
@@ -74,10 +79,13 @@ public class CheckoutActivity extends AppCompatActivity {
         sendEmailButton = findViewById(R.id.btn_send_email);
         sendEmailButton.setEnabled(false);
 
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallbackCheckOutAdapter(checkoutAdapter));
+        itemTouchHelper.attachToRecyclerView(recyclerView);
         sendEmailButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (products.get(0).getName() != null || products.get(0).getName().equals("")) showEmailDialog();
+                if (products.get(0).getName() != null || products.get(0).getName().equals(""))
+                    showEmailDialog();
             }
         });
         showEmptyState();
@@ -133,6 +141,7 @@ public class CheckoutActivity extends AppCompatActivity {
         final Dialog dialog;
         dialog = new Dialog(this);
         AtomicInteger count = new AtomicInteger(1);
+        maxCounterValue = 1;
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_barcode_reader);
         dialog.setCancelable(true);
@@ -154,6 +163,10 @@ public class CheckoutActivity extends AppCompatActivity {
         View buttonCardLayout = dialog.findViewById(R.id.layout_button_card);
         Button addButton = dialog.findViewById(R.id.btn_add);
         addButton.setEnabled(false);
+        plus.setEnabled(false);
+        minus.setEnabled(false);
+        plus.setImageDrawable(getDrawable(R.drawable.plus_disabled));
+        minus.setImageDrawable(getDrawable(R.drawable.minus_disabled));
         close.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,8 +174,10 @@ public class CheckoutActivity extends AppCompatActivity {
             }
         });
         plus.setOnClickListener(v -> {
-            counter.setText(String.valueOf(Integer.valueOf(counter.getText().toString()) + 1));
-            count.getAndIncrement();
+            if (count.get() != maxCounterValue) {
+                counter.setText(String.valueOf(Integer.valueOf(counter.getText().toString()) + 1));
+                count.getAndIncrement();
+            }
         });
         minus.setOnClickListener(v -> {
             if (Integer.valueOf(counter.getText().toString()) != 1) {
@@ -182,13 +197,37 @@ public class CheckoutActivity extends AppCompatActivity {
             @Override
             public void onDecoded(@NonNull final Result result) {
                 product = db.productDao().getProductById(Long.valueOf(result.getText()));
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mCodeScanner.stopPreview();
-                        addButton.setEnabled(true);
+                if(product != null){
+                    if (product.getStock() > 0) {
+                        maxCounterValue = product.getStock();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mCodeScanner.stopPreview();
+                                addButton.setEnabled(true);
+                                plus.setEnabled(true);
+                                minus.setEnabled(true);
+                                plus.setImageDrawable(getDrawable(R.drawable.plus));
+                                minus.setImageDrawable(getDrawable(R.drawable.minus));
+
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(CheckoutActivity.this, "Product not in stock", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
-                });
+                }else{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(CheckoutActivity.this, "Unknown Product", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
         });
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -199,15 +238,34 @@ public class CheckoutActivity extends AppCompatActivity {
                         for (int i = 1; i <= count.get(); i++) {
                             products.add(product);
                         }
+                        long id = product.getId();
+                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                db.productDao().updateProductStock(product.getStock() - count.get(), id);
+                            }
+                        });
                     } else {
                         products.add(product);
+                        long id = product.getId();
+                        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                db.productDao().updateProductStock(product.getStock() - 1, id);
+                            }
+                        });
                     }
                     addProductToList();
                     count.set(1);
                     counter.setText(String.valueOf(1));
+                    maxCounterValue = 1;
                     product = null;
                     mCodeScanner.startPreview();
                     addButton.setEnabled(false);
+                    plus.setEnabled(false);
+                    minus.setEnabled(false);
+                    plus.setImageDrawable(getDrawable(R.drawable.plus_disabled));
+                    minus.setImageDrawable(getDrawable(R.drawable.minus_disabled));
                     sendEmailButton.setEnabled(true);
                 }
 
@@ -247,15 +305,14 @@ public class CheckoutActivity extends AppCompatActivity {
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         EditText editText = dialog.findViewById(R.id.et_email);
         Button sendEmailButton = dialog.findViewById(R.id.btn_send_email);
-
         sendEmailButton.setOnClickListener(v -> {
             String email = editText.getText().toString().trim();
-            if(email.isEmpty()){
+            if (email.isEmpty()) {
                 editText.setError("Email Required!");
                 editText.requestFocus();
                 return;
             }
-            if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 editText.setError("Valid Email Required!");
                 editText.requestFocus();
                 return;
@@ -266,11 +323,7 @@ public class CheckoutActivity extends AppCompatActivity {
                 Toast.makeText(this, "Email Sent!", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }
-
-
         });
-
-
         dialog.show();
         dialog.getWindow().setAttributes(lp);
     }
@@ -296,5 +349,20 @@ public class CheckoutActivity extends AppCompatActivity {
 
         totalPriceTextView.setText(String.valueOf(sum));
 
+    }
+
+    @Override
+    public void onAdapterDelete(Product product) {
+
+        float sum = Float.parseFloat(totalPriceTextView.getText().toString());
+        sum -= product.getPrice();
+        totalPriceTextView.setText(String.valueOf(sum));
+
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                db.productDao().deleteProduct(product);
+            }
+        });
     }
 }

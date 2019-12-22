@@ -21,9 +21,15 @@ public class CheckoutAdapter extends RecyclerView.Adapter<CheckoutAdapter.Adapte
 
     private Context context;
     private List<Product> products;
+    private AdapterDeleteListener adapterDeleteListener;
 
-    public CheckoutAdapter(Context context) {
+    public interface AdapterDeleteListener{
+        void onAdapterDelete(Product product);
+    }
+
+    public CheckoutAdapter(Context context, AdapterDeleteListener adapterDeleteListener) {
         this.context = context;
+        this.adapterDeleteListener = adapterDeleteListener;
     }
 
     public void setProducts(List<Product> products){
@@ -48,6 +54,17 @@ public class CheckoutAdapter extends RecyclerView.Adapter<CheckoutAdapter.Adapte
 
         if(drawable != null) holder.iconImageView.setImageDrawable(drawable);
 
+    }
+
+    public void deleteItem(int position) {
+        Product product = products.get(position);
+        products.remove(position);
+        notifyItemRemoved(position);
+        adapterDeleteListener.onAdapterDelete(product);
+    }
+
+    public Context getContext() {
+        return context;
     }
 
     @Override

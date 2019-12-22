@@ -3,7 +3,7 @@
     package="com.idevelopstudio.poshopping">
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Checkout.CheckoutActivity"></activity>
+        <activity android:name=".EditProductActivity.EditProductActivity"></activity>
+        <activity android:name=".Checkout.CheckoutActivity" />
         <activity android:name=".ProductList.ProductListActivity" />
         <activity android:name=".AddProductDetailsActivity" />
         <activity android:name=".CategoryList.CategoryListActivity" />

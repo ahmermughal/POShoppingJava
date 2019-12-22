@@ -77,14 +77,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Adapte
             categoryName = itemView.findViewById(R.id.tv_category_name);
             categoryIcon = itemView.findViewById(R.id.iv_category_icon);
             divider = itemView.findViewById(R.id.divider);
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    adapterItemClickListener.onItemClick(categories.get(getAdapterPosition()-1).getCategoryName());
-                }
-            });
-
+                itemView.setOnClickListener(v -> {
+                    if(getAdapterPosition() > 0) {
+                        adapterItemClickListener.onItemClick(categories.get(getAdapterPosition() - 1).getCategoryName());
+                    }
+                });
         }
 
 

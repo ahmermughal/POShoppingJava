@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     for(Product product : products){
                         Log.d(TAG, "Id"+ product.getId());
                         Log.d(TAG, "Name"+ product.getName());
+                        Log.d(TAG, "Cateogry: " + product.getCategory());
                     }
                 }
             }

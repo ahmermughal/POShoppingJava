@@ -29,7 +29,7 @@
             android:textSize="18sp"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Sorry, its empty 😟!\nPress camera button\nto add products"/>
+            android:text="Sorry, its empty 😟!"/>
 
     </RelativeLayout>
 

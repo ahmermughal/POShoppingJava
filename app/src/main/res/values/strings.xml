@@ -5,4 +5,5 @@
 
     <string name="CATEGORY_LIST_MODE">CATEGORY_LIST_MODE</string>
     <string name="CATEGORY_NAME">CATEGORY_NAME</string>
+    <string name="PRODUCT_ID">PRODUCT_ID</string>
 </resources>
