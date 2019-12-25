@@ -23,16 +23,25 @@
         android:translationX="-30dp"
         app:srcCompat="@drawable/branch" />
 
-    <TextView
-        android:layout_width="280dp"
+<!--    <TextView-->
+<!--        android:layout_width="280dp"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_marginTop="100dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/select_mode"-->
+<!--        android:lines="2"-->
+<!--        android:textAlignment="center"-->
+<!--        android:textColor="@color/colorAccent"-->
+<!--        android:textSize="26sp"/>-->
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="120dp"
+        android:transitionName="logoTransition"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="100dp"
-        android:layout_height="wrap_content"
-        android:text="@string/select_mode"
-        android:lines="2"
-        android:textAlignment="center"
-        android:textColor="@color/colorAccent"
-        android:textSize="26sp"/>
+        android:src="@drawable/ic_main" />
+
 
 
     <LinearLayout

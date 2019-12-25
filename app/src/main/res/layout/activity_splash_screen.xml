@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:translationY="145dp"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/bg" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:translationX="-30dp"
+        app:srcCompat="@drawable/branch" />
+
+
+    <ImageView
+        android:id="@+id/iv"
+        android:layout_width="320dp"
+        android:layout_height="180dp"
+        android:translationY="30dp"
+        android:transitionName="logoTransition"
+        android:layout_centerInParent="true"
+        android:src="@drawable/ic_main" />
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="45dp"
+        android:translationX="70dp"
+        app:srcCompat="@drawable/leaf2" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="200dp"
+        android:translationX="30dp"
+        app:srcCompat="@drawable/leaf" />
+</RelativeLayout>
