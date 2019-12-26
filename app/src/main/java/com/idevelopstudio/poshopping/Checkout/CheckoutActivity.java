@@ -322,6 +322,7 @@ public class CheckoutActivity extends AppCompatActivity implements CheckoutAdapt
                 SendRecieptEmail.sendEmail(products, Float.valueOf(totalPriceTextView.getText().toString()), email);
                 Toast.makeText(this, "Email Sent!", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
+                onBackPressed();
             }
         });
         dialog.show();
@@ -353,16 +354,8 @@ public class CheckoutActivity extends AppCompatActivity implements CheckoutAdapt
 
     @Override
     public void onAdapterDelete(Product product) {
-
         float sum = Float.parseFloat(totalPriceTextView.getText().toString());
         sum -= product.getPrice();
         totalPriceTextView.setText(String.valueOf(sum));
-
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                db.productDao().deleteProduct(product);
-            }
-        });
     }
 }

@@ -40,11 +40,16 @@ public class SplashScreenActivity extends AppCompatActivity {
         Intent intent = new Intent(SplashScreenActivity.this.getApplicationContext(), MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            lottieAnimationView.pauseAnimation();
             ActivityOptions options = ActivityOptions
                     .makeSceneTransitionAnimation(SplashScreenActivity.this, imageView, "logoTransition");
             SplashScreenActivity.this.startActivity(intent, options.toBundle());
+            finish();
+
         } else {
+            lottieAnimationView.pauseAnimation();
             SplashScreenActivity.this.startActivity(intent);
+            finish();
         }
     }
 }

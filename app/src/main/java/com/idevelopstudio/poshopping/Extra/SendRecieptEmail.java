@@ -45,7 +45,7 @@ public class SendRecieptEmail {
 
                    @Override
                    public void onFail(String s) {
-                       Log.d(TAG, "Email Faild: " + s);
+                       Log.d(TAG, "Email Failed: " + s);
                    }
 
                    @Override
